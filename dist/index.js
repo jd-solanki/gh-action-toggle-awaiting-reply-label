@@ -8362,10 +8362,10 @@ const hasLabel = (issue, label) => {
         core.info(`label to toggle: ${label}`)
 
         const ignoreLabel = core.getInput('ignore-label');
-        core.info(`ignoreLabel to toggle: ${ignoreLabel}`)
+        core.info(`ignoreLabel: ${ignoreLabel}`)
 
         const onlyIfLabel = core.getInput('only-if-label');
-        core.info(`onlyIfLabel to toggle: ${onlyIfLabel}`)
+        core.info(`onlyIfLabel: ${onlyIfLabel}`)
     
         const memberAssociation = core.getInput('member-association') || "OWNER, MEMBER, COLLABORATOR"
         core.info(`Member Association: ${memberAssociation}`)
@@ -8383,17 +8383,21 @@ const hasLabel = (issue, label) => {
         console.log(`Payload: ${JSON.stringify(ctx.payload, undefined, 2)}`)
     
         // Docs: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
-
-        core.info(`hasSupportLabel(ctx.payload.issue): ${hasLabel(ctx.payload.issue)}`)
     
         // Add constraint => Run only if new comment is posted on issue && issue is raised support
         if (ctx.eventName === "issue_comment" && ctx.payload.action === "created") {
 
             // If `onlyIfLabel` label is provided & that label is not present on issue => ignore
-            if (onlyIfLabel && !hasLabel(ctx.payload.issue, onlyIfLabel)) return
+            if (onlyIfLabel && !hasLabel(ctx.payload.issue, onlyIfLabel)) {
+                core.info(`Ignoring as onlyIfLabel "${onlyIfLabel}" is not present on issue`)
+                return
+            }
 
             // If `ignoreLabel` label is provided & that label is present on issue => ignore
-            if (ignoreLabel && hasLabel(ctx.payload.issue, ignoreLabel)) return
+            if (ignoreLabel && hasLabel(ctx.payload.issue, ignoreLabel)) {
+                core.info(`Ignoring as ignoreLabel "${ignoreLabel}" label is present on issue`)
+                return
+            }
     
             // Fetch the issue
             const { data: issue } = await octokit.rest.issues.get({
