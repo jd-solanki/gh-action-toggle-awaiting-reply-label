@@ -12,10 +12,10 @@ const getOctokit = () => {
     try {
     
         // Get config
-        const label = core.getInput('message');
+        const label = core.getInput('label');
         core.info("label to toggle:", label)
     
-        const memberAssociation = core.getInput('member-association')
+        const memberAssociation = core.getInput('member-association') || "OWNER, MEMBER, COLLABORATOR"
         core.info("Member Association:", memberAssociation)
     
         const memberAssociationArray = memberAssociation.split(",").map(a => a.trim())
@@ -24,8 +24,8 @@ const getOctokit = () => {
         const octokit = getOctokit()
         const ctx = github.context
         
-        console.log("ctx.eventName", ctx.eventName)
-        console.log("Payload:", JSON.stringify(github.context.payload, undefined, 2))
+        console.log("ctx.eventName:", ctx.eventName)
+        console.log("Payload:", JSON.stringify(ctx.payload, undefined, 2))
     
         // Docs: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
     
@@ -48,11 +48,32 @@ const getOctokit = () => {
             core.info("Issue:", issue.title)
             
             // Grab Latest comment
+            const isMember = memberAssociationArray.includes(ctx.payload.comment.author_association)
 
-            // If latest comment is from author
-                // Remove label
+            core.info("isMember:", isMember)
+            core.info("ctx.payload.comment.user.id === ctx.payload.issue.user.id:", ctx.payload.comment.user.id === ctx.payload.issue.user.id)
+            
             // If latest comment is from team member
+            if (isMember) {
                 // Apply label
+                octokit.rest.issues.addLabels({
+                    issue_number: ctx.payload.issue.number,
+                    owner: ctx.repo.owner,
+                    repo: ctx.repo.repo,
+                    labels: [label]
+                })
+            } else if (ctx.payload.comment.user.id === ctx.payload.issue.user.id) {
+                // If latest comment is from author
+                // Remove label
+                octokit.rest.issues.removeLabel({
+                    issue_number: ctx.payload.issue.number,
+                    owner: ctx.repo.owner,
+                    repo: ctx.repo.repo,
+                    name: label
+                })
+
+            }
+
         }
     
     } catch (error) {
