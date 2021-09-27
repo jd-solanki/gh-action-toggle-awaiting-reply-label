@@ -39,6 +39,12 @@ Only perform toggling if this label is found on the issue. This is helpful in sc
 
 Do note that if `ignore-label` is also found with this label then action will omit processing.
 
+### `exclude-members`
+
+Ignore operation if commented by team members specified in `exclude-members`. This is useful if you want to ignore toggling when bot comment on issue or you already have another action which comment on behalf of you.
+
+> Note: This fields accepts GitHub username CSV like: jd-0001, johnDoe123, tony-robert-stark-007
+
 ## Example Usage
 
 ```yml

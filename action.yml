@@ -19,6 +19,9 @@ inputs:
   only-if-label:
     description: 'Only perform toggling if this label is found on the issue.'
     required: false
+  exclude-members:
+    description: 'Ignore operation if commented by team member but present in exclude-members'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

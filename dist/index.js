@@ -8372,6 +8372,11 @@ const hasLabel = (issue, label) => {
     
         const memberAssociationArray = memberAssociation.split(",").map(a => a.trim())
 
+        const excludeMembers = core.getInput('exclude-members')
+        core.info(`Exclude Members: ${memberAssociation}`)
+
+        const excludeMembersArray = excludeMembers.split(",").map(m => m.trim())
+
         // 👉 Config Validation
         if (!label) return core.setFailed("Toggling label is required")
     
@@ -8417,11 +8422,13 @@ const hasLabel = (issue, label) => {
             // Grab Latest comment
             const doesCommentedByMember = memberAssociationArray.includes(ctx.payload.comment.author_association)
             const doesCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
+            const doesCommentedByExcludedMember = excludeMembersArray.includes(ctx.payload.comment.user.login)
 
-            core.info(`is commented by member: ${doesCommentedByMember}`)
+            core.info(`Does commented by member: ${doesCommentedByMember}`)
+            core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
             
             // If latest comment is from team member
-            if (doesCommentedByMember) {
+            if (doesCommentedByMember && !doesCommentedByExcludedMember) {
                 // Apply label
                 octokit.rest.issues.addLabels({
                     issue_number: ctx.payload.issue.number,
