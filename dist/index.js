@@ -8431,7 +8431,7 @@ const hasLabel = (issue, label) => {
             // If latest comment is from team member
             if (doesCommentedByMember) {
 
-                if (!doesCommentedByExcludedMember) {
+                if (doesCommentedByExcludedMember) {
                     core.info("Commented by member which is excluded. Exiting.")
                     return
                 }
