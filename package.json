@@ -1,0 +1,25 @@
+{
+  "name": "gh-action-toggle-awaiting-reply-label",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "ncc build index.js --license licenses.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jd-0001/gh-action-toggle-awaiting-reply-label.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jd-0001/gh-action-toggle-awaiting-reply-label/issues"
+  },
+  "homepage": "https://github.com/jd-0001/gh-action-toggle-awaiting-reply-label#readme",
+  "dependencies": {
+    "@actions/core": "^1.5.0",
+    "@actions/github": "^5.0.0"
+  }
+}

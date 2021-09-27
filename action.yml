@@ -1,0 +1,18 @@
+name: 'Toggle awaiting-reply label of issue'
+description: 'Toggle awaiting-reply or any label when issue author or team member comment on issue.'
+author: jd-0001
+inputs:
+  token:
+    description: "GitHub personal token"
+    required: true
+  label:
+    description: 'Label to toggle when author or team member comment on issue'
+    required: true
+  member-association:
+    # #https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
+    description: 'Repository associations that are considered part of the team. The action will skip the labeling logic if the user who created the comment falls into one of these groups. Separate multiple with commas (eg. "OWNER, MEMBER")'
+    required: false
+    default: "OWNER, MEMBER, COLLABORATOR"
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
