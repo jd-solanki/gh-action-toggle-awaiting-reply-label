@@ -35,7 +35,7 @@ const hasLabel = (issue, label) => {
         const memberAssociationArray = memberAssociation.split(",").map(a => a.trim())
 
         const excludeMembers = core.getInput('exclude-members')
-        core.info(`Exclude Members: ${memberAssociation}`)
+        core.info(`Exclude Members: ${excludeMembers}`)
 
         const excludeMembersArray = excludeMembers.split(",").map(m => m.trim())
 
@@ -86,11 +86,18 @@ const hasLabel = (issue, label) => {
             const doesCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
             const doesCommentedByExcludedMember = excludeMembersArray.includes(ctx.payload.comment.user.login)
 
+            core.info(`Does commented by author: ${doesCommentedByAuthor}`)
             core.info(`Does commented by member: ${doesCommentedByMember}`)
             core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
             
             // If latest comment is from team member
-            if (doesCommentedByMember && !doesCommentedByExcludedMember) {
+            if (doesCommentedByMember) {
+
+                if (!doesCommentedByExcludedMember) {
+                    core.info("Commented by member which is excluded. Exiting.")
+                    return
+                }
+
                 // Apply label
                 octokit.rest.issues.addLabels({
                     issue_number: ctx.payload.issue.number,
