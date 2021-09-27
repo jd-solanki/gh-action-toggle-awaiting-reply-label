@@ -5,6 +5,9 @@ const github = require('@actions/github');
 
 const getOctokit = () => {
     const token = core.getInput('token');
+
+    if (!token) return core.setFailed("token is required")
+
     return github.getOctokit(token);   
 }
 
@@ -32,7 +35,6 @@ const hasLabel = (issue, label) => {
         const memberAssociationArray = memberAssociation.split(",").map(a => a.trim())
 
         // 👉 Config Validation
-        if (!token) return core.setFailed("token is required")
         if (!label) return core.setFailed("Toggling label is required")
     
         // 👉 Get octokit
