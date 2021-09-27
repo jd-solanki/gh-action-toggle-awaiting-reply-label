@@ -8346,29 +8346,52 @@ const getOctokit = () => {
     return github.getOctokit(token);   
 }
 
+const hasLabel = (issue, label) => {
+    const labelNames = issue.labels.map(issueObj => issueObj.name)
+    return labelNames.includes(label)
+}
+
 (async () => {
     try {
     
-        // Get config
+        // 👉 Get config
         const label = core.getInput('label');
-        core.info("label to toggle:", label)
+        core.info(`label to toggle: ${label}`)
+
+        const ignoreLabel = core.getInput('ignore-label');
+        core.info(`ignoreLabel to toggle: ${ignoreLabel}`)
+
+        const onlyIfLabel = core.getInput('only-if-label');
+        core.info(`onlyIfLabel to toggle: ${onlyIfLabel}`)
     
         const memberAssociation = core.getInput('member-association') || "OWNER, MEMBER, COLLABORATOR"
-        core.info("Member Association:", memberAssociation)
+        core.info(`Member Association: ${memberAssociation}`)
     
         const memberAssociationArray = memberAssociation.split(",").map(a => a.trim())
+
+        // 👉 Config Validation
+        if (!token) return core.setFailed("token is required")
+        if (!label) return core.setFailed("Toggling label is required")
     
-        // Get octokit
+        // 👉 Get octokit
         const octokit = getOctokit()
         const ctx = github.context
         
-        console.log("ctx.eventName:", ctx.eventName)
-        console.log("Payload:", JSON.stringify(ctx.payload, undefined, 2))
+        console.log(`ctx.eventName: ${ctx.eventName}`)
+        console.log(`Payload: ${JSON.stringify(ctx.payload, undefined, 2)}`)
     
         // Docs: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
+
+        core.info(`hasSupportLabel(ctx.payload.issue): ${hasLabel(ctx.payload.issue)}`)
     
-        // Add constraint => Run only if new comment is posted on issue
+        // Add constraint => Run only if new comment is posted on issue && issue is raised support
         if (ctx.eventName === "issue_comment" && ctx.payload.action === "created") {
+
+            // If `onlyIfLabel` label is provided & that label is not present on issue => ignore
+            if (onlyIfLabel && !hasLabel(ctx.payload.issue, onlyIfLabel)) return
+
+            // If `ignoreLabel` label is provided & that label is present on issue => ignore
+            if (ignoreLabel && hasLabel(ctx.payload.issue, ignoreLabel)) return
     
             // Fetch the issue
             const { data: issue } = await octokit.rest.issues.get({
@@ -8383,13 +8406,13 @@ const getOctokit = () => {
             if (issue.state === "closed") return
 
             core.info("Issue is open.")
-            core.info("Issue:", issue.title)
+            core.info(`Issue: ${issue.title}`)
             
             // Grab Latest comment
             const isMember = memberAssociationArray.includes(ctx.payload.comment.author_association)
 
-            core.info("isMember:", isMember)
-            core.info("ctx.payload.comment.user.id === ctx.payload.issue.user.id:", ctx.payload.comment.user.id === ctx.payload.issue.user.id)
+            core.info(`isMember: ${isMember}`)
+            core.info(`ctx.payload.comment.user.id === ctx.payload.issue.user.id: ${ctx.payload.comment.user.id === ctx.payload.issue.user.id}`)
             
             // If latest comment is from team member
             if (isMember) {

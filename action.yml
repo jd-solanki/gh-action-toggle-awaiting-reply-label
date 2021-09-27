@@ -9,10 +9,16 @@ inputs:
     description: 'Label to toggle when author or team member comment on issue'
     required: true
   member-association:
-    # #https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
+    # https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
     description: 'Repository associations that are considered part of the team. The action will skip the labeling logic if the user who created the comment falls into one of these groups. Separate multiple with commas (eg. "OWNER, MEMBER")'
     required: false
     default: "OWNER, MEMBER, COLLABORATOR"
+  ignore-label:
+    description: 'Ignore toggling label when this label is found on the issue.'
+    required: false
+  only-if-label:
+    description: 'Only perform toggling if this label is found on the issue.'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
