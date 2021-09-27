@@ -8389,13 +8389,13 @@ const hasLabel = (issue, label) => {
 
             // If `onlyIfLabel` label is provided & that label is not present on issue => ignore
             if (onlyIfLabel && !hasLabel(ctx.payload.issue, onlyIfLabel)) {
-                core.info(`Ignoring as onlyIfLabel "${onlyIfLabel}" is not present on issue`)
+                core.info(`Ignoring as onlyIfLabel "${onlyIfLabel}" is not present on issue. Exiting.`)
                 return
             }
 
             // If `ignoreLabel` label is provided & that label is present on issue => ignore
             if (ignoreLabel && hasLabel(ctx.payload.issue, ignoreLabel)) {
-                core.info(`Ignoring as ignoreLabel "${ignoreLabel}" label is present on issue`)
+                core.info(`Ignoring as ignoreLabel "${ignoreLabel}" is present on issue. Exiting.`)
                 return
             }
     
@@ -8411,17 +8411,17 @@ const hasLabel = (issue, label) => {
             // If issue is closed => return
             if (issue.state === "closed") return
 
-            core.info("Issue is open.")
-            core.info(`Issue: ${issue.title}`)
+            core.info(`Issue state: ${issue.state}`)
+            core.info(`Issue title: ${issue.title}`)
             
             // Grab Latest comment
-            const isMember = memberAssociationArray.includes(ctx.payload.comment.author_association)
+            const doesCommentedByMember = memberAssociationArray.includes(ctx.payload.comment.author_association)
+            const doesCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
 
-            core.info(`isMember: ${isMember}`)
-            core.info(`ctx.payload.comment.user.id === ctx.payload.issue.user.id: ${ctx.payload.comment.user.id === ctx.payload.issue.user.id}`)
+            core.info(`is commented by member: ${doesCommentedByMember}`)
             
             // If latest comment is from team member
-            if (isMember) {
+            if (doesCommentedByMember) {
                 // Apply label
                 octokit.rest.issues.addLabels({
                     issue_number: ctx.payload.issue.number,
@@ -8429,7 +8429,7 @@ const hasLabel = (issue, label) => {
                     repo: ctx.repo.repo,
                     labels: [label]
                 })
-            } else if (ctx.payload.comment.user.id === ctx.payload.issue.user.id) {
+            } else if (doesCommentedByAuthor) {
                 // If latest comment is from author
                 // Remove label
                 octokit.rest.issues.removeLabel({
@@ -8438,7 +8438,8 @@ const hasLabel = (issue, label) => {
                     repo: ctx.repo.repo,
                     name: label
                 })
-
+            } else {
+                core.info("Commented by some other user. Exiting.")
             }
 
         }
