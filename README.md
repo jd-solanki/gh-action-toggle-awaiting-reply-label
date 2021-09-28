@@ -64,9 +64,9 @@ jobs:
     name: Job for toggling label
     steps:
       - name: Toggle label
-        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.1
         with:
-          label: question
+          label: awaiting-reply
 ```
 
 ### Remove specified label only if repo owner or member comment on issue (not collaborator)
@@ -82,9 +82,9 @@ jobs:
     name: Job for toggling label
     steps:
       - name: Toggle label
-        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.1
         with:
-          label: question
+          label: awaiting-reply
           member-association: OWNER, MEMBER
 ```
 
@@ -101,9 +101,9 @@ jobs:
     name: Job for toggling label
     steps:
       - name: Toggle label
-        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.1
         with:
-          label: question
+          label: awaiting-reply
           ignore-label: internal
 ```
 
@@ -120,9 +120,9 @@ jobs:
     name: Job for toggling label
     steps:
       - name: Toggle label
-        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.1
         with:
-          label: question
+          label: awaiting-reply
           only-if-label: support
 ```
 
@@ -139,8 +139,8 @@ jobs:
     name: Job for toggling label
     steps:
       - name: Toggle label
-        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.1
         with:
-          label: question
+          label: awaiting-reply
           exclude-members: jd-0001, johnDoe123
 ```
