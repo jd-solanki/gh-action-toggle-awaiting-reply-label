@@ -2,8 +2,8 @@
 
 This actions toggle labels like "awaiting-reply" or "need-more-info" which indicates response is required for further action. This is useful if you want to filter out issue already responded to the issue author but the author isn't responded back.
 
-**Usecase:**
-Mostly in premium product or service customer support is top priority. In this scenario customer may create issue and sales team replies back withing their business days. This action really helps in filtering only those issues which requires sales teams response. Those issue which are already answered/responded will be marked via `awaiting-reply` or `need-more-info`.
+**Use case:**
+Mostly in premium product or service customer support is top priority. In this scenario customer may create issue and sales team replies back withing their business days. This action really helps in filtering only those issues which requires sales teams response. Those issue which are already answered/responded will be marked via "awaiting-reply" or "need-more-info".
 
 This is same of large open source community where an individual what to help people and want to check only those issues where no team member responded yet.
 
@@ -11,9 +11,11 @@ This is same of large open source community where an individual what to help peo
 
 ## Inputs
 
-### `token`*
+### `token`
 
-GitHub personal token
+#### *Default: ${{ github.token }}*
+
+GitHub token
 
 ### `label`*
 
@@ -47,6 +49,98 @@ Ignore operation if commented by team members specified in `exclude-members`. Th
 
 ## Example Usage
 
-```yml
+> NOTE: Do update action version `jd-0001/gh-action-toggle-awaiting-reply-label@{YOUR_DESIRED_VERSION}`. This will help you keep using this action if we introduce breaking changes.
 
+### Toggle specified label on each issue
+
+```yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Job for toggling label
+    steps:
+      - name: Toggle label
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        with:
+          label: question
+```
+
+### Remove specified label only if repo owner or member comment on issue (not collaborator)
+
+```yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Job for toggling label
+    steps:
+      - name: Toggle label
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        with:
+          label: question
+          member-association: OWNER, MEMBER
+```
+
+### Ignore toggling label if specified label is present on issue
+
+```yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Job for toggling label
+    steps:
+      - name: Toggle label
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        with:
+          label: question
+          ignore-label: internal
+```
+
+### Only toggle label if specified label is present on issue
+
+```yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Job for toggling label
+    steps:
+      - name: Toggle label
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        with:
+          label: question
+          only-if-label: support
+```
+
+### Ignore removing label if mentioned users comment on issue and still present in `member-association`
+
+```yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Job for toggling label
+    steps:
+      - name: Toggle label
+        uses: jd-0001/gh-action-toggle-awaiting-reply-label@1.0.0
+        with:
+          label: question
+          exclude-members: jd-0001, johnDoe123
 ```

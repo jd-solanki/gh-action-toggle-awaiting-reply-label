@@ -8384,8 +8384,8 @@ const hasLabel = (issue, label) => {
         const octokit = getOctokit()
         const ctx = github.context
         
-        console.log(`ctx.eventName: ${ctx.eventName}`)
-        console.log(`Payload: ${JSON.stringify(ctx.payload, undefined, 2)}`)
+        // console.log(`ctx.eventName: ${ctx.eventName}`)
+        // console.log(`Payload: ${JSON.stringify(ctx.payload, undefined, 2)}`)
     
         // Docs: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
     
@@ -8411,7 +8411,7 @@ const hasLabel = (issue, label) => {
                 repo: ctx.repo.repo,
             })
 
-            console.log("Issue:", JSON.stringify(issue, undefined, 2))
+            // console.log("Issue:", JSON.stringify(issue, undefined, 2))
             
             // If issue is closed => return
             if (issue.state === "closed") return

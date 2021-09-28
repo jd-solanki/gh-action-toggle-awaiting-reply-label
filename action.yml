@@ -1,9 +1,12 @@
 name: 'Toggle awaiting-reply label of issue'
 description: 'Toggle awaiting-reply or any label when issue author or team member comment on issue.'
 author: jd-0001
+branding:
+  icon: award
+  color: purple
 inputs:
   token:
-    description: "GitHub personal token"
+    description: "GitHub token"
     required: false
     default: ${{ github.token }}
   label:
