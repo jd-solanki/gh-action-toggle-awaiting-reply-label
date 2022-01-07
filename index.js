@@ -20,7 +20,7 @@ const hasLabel = (issue, label) => {
   try {
     // 👉 Get config
     const debug = Boolean(core.getInput('debug'))
-    core.info(`debug: ${debug}`)
+    if (debug) core.info(`debug: ${debug}`)
 
     const label = core.getInput('label')
     if (debug) core.info(`label to toggle: ${label}`)
@@ -95,10 +95,10 @@ const hasLabel = (issue, label) => {
         })
 
         /*
-                status ==== 204 => org member
-                status ==== 302 => requester is not member
-                status ==== 404 => requester is member and user is not member
-              */
+          status ==== 204 => org member
+          status ==== 302 => requester is not member
+          status ==== 404 => requester is member and user is not member
+        */
 
         if (debug) core.info(`'Request response status: ${status}'`)
 
@@ -118,16 +118,18 @@ const hasLabel = (issue, label) => {
       const doesCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
       const doesCommentedByExcludedMember = excludeMembersArray.includes(ctx.payload.comment.user.login)
 
-      core.info(`Does commented by author: ${doesCommentedByAuthor}`)
-      core.info(`Does commented by member: ${doesCommentedByMember}`)
-      core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
+      if (debug) core.info(`Does commented by author: ${doesCommentedByAuthor}`)
+      if (debug) core.info(`Does commented by member: ${doesCommentedByMember}`)
+      if (debug) core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
 
       // If latest comment is from team member
       if (doesCommentedByMember) {
         if (doesCommentedByExcludedMember) {
-          core.info('Commented by member which is excluded. Exiting.')
+          if (debug) core.info('Commented by member which is excluded. Exiting.')
           return null
         }
+
+        if (debug) core.info(`"Adding label: ${label}"`)
 
         // Apply label
         octokit.rest.issues.addLabels({
@@ -137,6 +139,8 @@ const hasLabel = (issue, label) => {
           labels: [label],
         })
       } else if (doesCommentedByAuthor) {
+        if (debug) core.info(`"Removing label: ${label}"`)
+
         // If latest comment is from author
         // Remove label
         octokit.rest.issues.removeLabel({
@@ -146,7 +150,8 @@ const hasLabel = (issue, label) => {
           name: label,
         })
       } else {
-        core.info('Commented by some other user. Exiting.')
+        // eslint-disable-next-line no-lonely-if
+        if (debug) core.info('Commented by some other user. Exiting.')
       }
     }
   } catch (error) {
