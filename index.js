@@ -31,6 +31,9 @@ const hasLabel = (issue, label) => {
     const onlyIfLabel = core.getInput('only-if-label')
     if (debug) core.info(`onlyIfLabel: ${onlyIfLabel}`)
 
+    const removeOnlyIfAuthor = core.getInput('remove-only-if-author')
+    if (debug) core.info(`Remove label if only  commented by author: ${removeOnlyIfAuthor}`)
+
     const excludeMembers = core.getInput('exclude-members')
     if (debug) core.info(`Exclude Members: ${excludeMembers}`)
 
@@ -138,10 +141,15 @@ const hasLabel = (issue, label) => {
           repo: ctx.repo.repo,
           labels: [label],
         })
-      } else if (doesCommentedByAuthor) {
+      } else {
+        if (removeOnlyIfAuthor && !doesCommentedByAuthor) {
+          if (debug) core.info('Commented by some other user and `remove-only-if-author` is `false`. Exiting.')
+
+          return null
+        }
+
         if (debug) core.info(`"Removing label: ${label}"`)
 
-        // If latest comment is from author
         // Remove label
         octokit.rest.issues.removeLabel({
           issue_number: ctx.payload.issue.number,
@@ -149,9 +157,6 @@ const hasLabel = (issue, label) => {
           repo: ctx.repo.repo,
           name: label,
         })
-      } else {
-        // eslint-disable-next-line no-lonely-if
-        if (debug) core.info('Commented by some other user. Exiting.')
       }
     }
   } catch (error) {

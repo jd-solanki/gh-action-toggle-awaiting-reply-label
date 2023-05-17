@@ -26,6 +26,10 @@ inputs:
   exclude-members:
     description: 'Ignore operation if commented by team member but present in exclude-members'
     required: false
+  remove-only-if-author:
+    description: 'Remove label only if author comments on issue'
+    required: false
+    default: false
   debug:
     description: "Debug the action which will print more information on how its running and what's processing"
     required: false
