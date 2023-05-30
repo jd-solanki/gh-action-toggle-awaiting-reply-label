@@ -125,9 +125,6 @@ const hasLabel = (issue, label) => {
       if (debug) core.info(`Does commented by member: ${doesCommentedByMember}`)
       if (debug) core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
 
-      console.log('comment:')
-      console.log(ctx.payload.comment)
-
       // If latest comment is from team member
       if (doesCommentedByMember) {
         if (doesCommentedByExcludedMember) {
@@ -147,6 +144,13 @@ const hasLabel = (issue, label) => {
       } else {
         if (removeOnlyIfAuthor && !doesCommentedByAuthor) {
           if (debug) core.info('Commented by some other user and `remove-only-if-author` is `false`. Exiting.')
+
+          return null
+        }
+
+        // Check if commented by Bot
+        if (ctx.payload.comment.user.type === 'Bot') {
+          if (debug) core.info('Commented by Bot. Exiting.')
 
           return null
         }
