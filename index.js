@@ -125,6 +125,9 @@ const hasLabel = (issue, label) => {
       if (debug) core.info(`Does commented by member: ${doesCommentedByMember}`)
       if (debug) core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
 
+      console.log('comment:')
+      console.log(ctx.payload.comment)
+
       // If latest comment is from team member
       if (doesCommentedByMember) {
         if (doesCommentedByExcludedMember) {
