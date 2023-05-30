@@ -9939,6 +9939,13 @@ const hasLabel = (issue, label) => {
           return null
         }
 
+        // Check if commented by Bot
+        if (ctx.payload.comment.user.type === 'Bot') {
+          if (debug) core.info('Commented by Bot. Exiting.')
+
+          return null
+        }
+
         if (debug) core.info(`"Removing label: ${label}"`)
 
         // Remove label
