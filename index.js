@@ -31,7 +31,7 @@ const hasLabel = (issue, label) => {
     const onlyIfLabel = core.getInput('only-if-label')
     if (debug) core.info(`onlyIfLabel: ${onlyIfLabel}`)
 
-    const removeOnlyIfAuthor = core.getInput('remove-only-if-author')
+    const removeOnlyIfAuthor = JSON.parse(core.getInput('remove-only-if-author') || false)
     if (debug) core.info(`Remove label if only  commented by author: ${removeOnlyIfAuthor}`)
 
     const excludeMembers = core.getInput('exclude-members')
@@ -118,10 +118,10 @@ const hasLabel = (issue, label) => {
       }
 
       // Grab Latest comment
-      const doesCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
+      const isCommentedByAuthor = ctx.payload.comment.user.id === ctx.payload.issue.user.id
       const doesCommentedByExcludedMember = excludeMembersArray.includes(ctx.payload.comment.user.login)
 
-      if (debug) core.info(`Does commented by author: ${doesCommentedByAuthor}`)
+      if (debug) core.info(`Does commented by author: ${isCommentedByAuthor}`)
       if (debug) core.info(`Does commented by member: ${doesCommentedByMember}`)
       if (debug) core.info(`Does commented by member which is excluded: ${doesCommentedByExcludedMember}`)
 
@@ -142,8 +142,8 @@ const hasLabel = (issue, label) => {
           labels: [label],
         })
       } else {
-        if (removeOnlyIfAuthor && !doesCommentedByAuthor) {
-          if (debug) core.info('Commented by some other user and `remove-only-if-author` is `false`. Exiting.')
+        if (removeOnlyIfAuthor && !isCommentedByAuthor) {
+          if (debug) core.info('Commented by some other user and `remove-only-if-author` is `true`. Exiting.')
 
           return null
         }
